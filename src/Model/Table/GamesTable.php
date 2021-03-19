@@ -1,25 +1,21 @@
-<?php
-
+<?php 
 namespace App\Model\Table;
 
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-	
+
 class GamesTable extends Table{
 
-	public function initialize(array $config): void{
-		parent::initialize($config);
+	public function initialize(array $config) :void{
 		$this->addBehavior('Timestamp');
-		
-		$this->belongsTo('librairies', ['foreignKey' => 'user_id', 'joinType' => 'INNER']);
 
-		$this->hasMany('librairies', ['foreignKey' => 'game_id']);
+		$this->hasMany('Librairies', ['foreignKey' => 'game_id']);
+		$this->hasMany('Comments', ['foreignKey' => 'game_id']);
 	}
 
-	public function validationDefault(Validator $v): Validator{
-		$v
-			->maxLength('title', 150)
-			->notEmptyString('title');
+	public function validationDefault(Validator $v) : Validator{
+		$v->maxLength('title', 30)
+		  ->allowEmptyString('published');
 
 		return $v;
 	}

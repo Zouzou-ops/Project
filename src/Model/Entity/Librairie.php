@@ -3,7 +3,7 @@ namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
 
-class Game extends Entity{
+class Librairie extends Entity{
     
     protected $_accessible = [
         '*' => true,

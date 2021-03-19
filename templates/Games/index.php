@@ -1,34 +1,23 @@
+<section id="games">
+	<h1>Les jeux</h1>	
 
-<h1>Les albums</h1>
+	<div class="wrapper">
+		<?php
+		if($games->count() == 0)
+			echo '<p>Aucun jeu actuellement</p>';
 
-<section class="game">
-	
-<?php
+		else {
+			foreach ($games as $g) : ?>
+			<div class="card">
+				<figure>
+					<?= $this->Html->image('data/poster/'.$g->poster, ['alt' => $g->title]) ?>		</figure>
+				<h1><?= $this->Html->link($g->title, ['controller' => 'Games', 'action' => 'view', $g->id]) ?></h1>
+			</div>
 
-if($games->count() == 0)
-	echo '<p>Aucun jeu actuellement</p>';
+			<?php endforeach;
 
-else {
-	
-	foreach ($games as $a) : ?>
-	<article class="game">
-		<figure>
-			<img src="">
-		</figure>
-		<h1><?= $this->Html->link($a->name, ['controller' => 'Games', 'action' => 'view', $a->id]) ?></h1>
-		<i class="fas fa-<?= ($a->status) ? 'lock' : 'lock-open' ?>" aria-hidden="true"></i>
-
-		<footer class="infos">
-			<div class="content"><?= $a->description ?></div>
-			<p>jeu créé par <?= $this->Html->link($a->user->pseudonym, ['controller' => 'Users', 'action' => 'view', $a->user_id]) ?>
-			</p>
-		</footer>
-	</article>
-
-<?php endforeach;
-
-} ?>
-
+		} ?>
+	</div>
 </section>
 <ul class="pagination">
     <?= $this->Paginator->numbers() ?>

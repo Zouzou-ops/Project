@@ -1,78 +1,80 @@
-<?php 
+<?php //GamesController.php
 
 namespace App\Controller;
 
-class mssql_get_last_message()Controller extends AppController {
-	
+use App\Controller\AppController;
 
+class GamesController extends AppController{
+	public function initialize() : void{
+		parent::initialize();
+	}
 	public function index() {
-		//$albums = $this->Albums->find('all', ['contain' => ['Users', 'Pictures']]);
 
-		//on utilise le module paginate qui se charge de faire la séparation en pages, en lui passant les parametre que l'on souhaite (limite du nombre d'éléments par page, les contain à importer en plus , etc
-		$games = $this->paginate($this->Albums, [
-			'limit' => 9,
+		$games = $this->paginate($this->Games, [
+			'limit' => 5,
         	'order' => [
-	            'Games.name' => 'asc'
-	        ],
-	        'contain' => ['Users', 'Pictures']
-	    ]);
+	            'Games.title' => 'asc'
+	        ]]);
 
 		$this->set(compact('games'));
 	}
+	public function new(){
 
-	public function random(){
-		$a = $this->Albums->find('all', ['order' => 'rand()'])->first();
-		return $this->redirect(['action' => 'view', $a->id]);
-	}
-
-
-	public function add(){
-		$n = $this->Albums->newEmptyEntity();
+		if($this->request->getAttribute('identity')->level == 'user')
+			return $this->redirect(['controller' => 'Games', 'action' => 'index']);
+		else{
+			$n = $this->Games->newEmptyEntity();
 		if ($this->request->is('post')) {
-			$n = $this->Albums->patchEntity($n, $this->request->getData());
+			$n->title = $this->request->getData('title');
+			$n->style = $this->request->getData('style');
+			$n->publisher = $this->request->getData('publisher');
+			if(
+				empty($this->request->getData('poster')->getClientFilename()) ||
+				!in_array($this->request->getData('poster')->getClientMediaType(), ['image/png', 'image/jpg', 'image/jpeg'])
+			){
+				//flash error
+				$this->Flash->error('L\'image doit être au format png ou jpg');
 
-			$n->user_id = $this->request->getAttribute('identity')->id;
+			}else{ //sinon
+				//on recup l'extension
+				$ext = pathinfo($this->request->getData('poster')->getClientFilename(), PATHINFO_EXTENSION);
+				//on cree un nouveau nom
+				$newName = 'pic-'.rand(0, 999).'-'.time().'.'.$ext;
+				//on place le nouveau nom dans l'entité 
+				$n->poster = $newName;
 
-			if ($this->Albums->save($n)) {
-				$this->Flash->success('Jeux créé');
-
-				return $this->redirect(['action' => 'index']);
-			}
-			$this->Flash->error('Impossible de créer le jeu');
+				//on tente la sauvegarde
+				if($this->Games->save($n)){
+					//on deplace le fichier vers le dossier data avec le nouveau nom
+					$this->request->getData('poster')->moveTo(WWW_ROOT.'img/data/poster/'.$newName);
+					//on flash success
+					$this->Flash->success('Ok');
+					return $this->redirect(['controller' => 'Games', 'action' => 'index']);
+				}else{ //sinon 
+					//error
+					$this->Flash->error('Planté, try again');
+				}//fin si sauvegarde
+			}//fin si format
 		}
 		$this->set(compact('n'));
+		}	
 	}
+	public function view($game_id = null){
+		if($game_id == null)
+			return $this->redirect(['controller' => 'Games','action' => 'index']);
 
+		$game = $this->Games->findById($game_id);
 
-	public function view($id = null){
+		if($game->isEmpty())
+			return $this->redirect(['controller' => 'Games','action' => 'index']);
 
-		if($id == null)
-			return $this->redirect(['action' => 'index']);
-		
-		
-		$info = $this->Games->findById($id)->contain(['Users']);
+		$game = $game->first();
 
-
-		//pour pouvoir utiliser le isEmpty() il faut d'abord faire un findById() (et pas un get())
-		if($info->isEmpty())
-			return $this->redirect(['action' => 'index']);
-
-		/*
-		find nous fournissait un groupe d'objet.
-		pour accéder au premier élément de ce groupe, on applique la methode first().
-		C'est ce premier élément que l'on transmet à la vue
-		*/
-		$info = $info->first();
-
-		$n = $this->Games->Pictures->newEmptyEntity();
-
-		//on récupère les pictures liées à cet album, dans le module paginator
-		$pictures = $this->paginate(
-			$this->Games->Pictures->findByAlbum_id($id),
-			[ 'limit' => 2,  'contain' => ['Users']  ]
+		$user = $this->paginate(
+			$this->Games->Librairies->findByGame_id($game_id),
+			[ 'limit' => 5, 'contain' => 'Users']
 		);
-
-		$this->set(compact('info', 'n', 'pictures'));
+		$this->set(compact('game', 'user'));
 	}
-
+	
 }
