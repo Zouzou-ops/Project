@@ -2,22 +2,22 @@
 
 namespace App\Controller;
 
-class AlbumsController extends AppController {
+class mssql_get_last_message()Controller extends AppController {
 	
 
 	public function index() {
 		//$albums = $this->Albums->find('all', ['contain' => ['Users', 'Pictures']]);
 
 		//on utilise le module paginate qui se charge de faire la séparation en pages, en lui passant les parametre que l'on souhaite (limite du nombre d'éléments par page, les contain à importer en plus , etc
-		$albums = $this->paginate($this->Albums, [
+		$games = $this->paginate($this->Albums, [
 			'limit' => 9,
         	'order' => [
-	            'Albums.name' => 'asc'
+	            'Games.name' => 'asc'
 	        ],
 	        'contain' => ['Users', 'Pictures']
 	    ]);
 
-		$this->set(compact('albums'));
+		$this->set(compact('games'));
 	}
 
 	public function random(){
@@ -34,11 +34,11 @@ class AlbumsController extends AppController {
 			$n->user_id = $this->request->getAttribute('identity')->id;
 
 			if ($this->Albums->save($n)) {
-				$this->Flash->success('Album créé');
+				$this->Flash->success('Jeux créé');
 
 				return $this->redirect(['action' => 'index']);
 			}
-			$this->Flash->error('Impossible de créer l\'album');
+			$this->Flash->error('Impossible de créer le jeu');
 		}
 		$this->set(compact('n'));
 	}
@@ -50,7 +50,7 @@ class AlbumsController extends AppController {
 			return $this->redirect(['action' => 'index']);
 		
 		
-		$info = $this->Albums->findById($id)->contain(['Users']);
+		$info = $this->Games->findById($id)->contain(['Users']);
 
 
 		//pour pouvoir utiliser le isEmpty() il faut d'abord faire un findById() (et pas un get())
@@ -64,11 +64,11 @@ class AlbumsController extends AppController {
 		*/
 		$info = $info->first();
 
-		$n = $this->Albums->Pictures->newEmptyEntity();
+		$n = $this->Games->Pictures->newEmptyEntity();
 
 		//on récupère les pictures liées à cet album, dans le module paginator
 		$pictures = $this->paginate(
-			$this->Albums->Pictures->findByAlbum_id($id),
+			$this->Games->Pictures->findByAlbum_id($id),
 			[ 'limit' => 2,  'contain' => ['Users']  ]
 		);
 
