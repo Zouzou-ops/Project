@@ -12,6 +12,9 @@
 				<figure>
 					<?= $this->Html->image('data/poster/'.$g->poster, ['alt' => $g->title]) ?>		</figure>
 				<h1><?= $this->Html->link($g->title, ['controller' => 'Games', 'action' => 'view', $g->id]) ?></h1>
+				<p>Genre : <?=$g->style?></p>
+				<p>Editeur : <?=$g->publisher?></p>
+				<?= $this->Form->postLink('Ajouter à ma bibliothèque', ['controller' => 'libraries', 'action' => 'new', $g->id]) ?>
 			</div>
 
 			<?php endforeach;

@@ -11,7 +11,7 @@ class GamesController extends AppController{
 	public function index() {
 
 		$games = $this->paginate($this->Games, [
-			'limit' => 5,
+			'limit' => 10,
         	'order' => [
 	            'Games.title' => 'asc'
 	        ]]);
@@ -19,6 +19,7 @@ class GamesController extends AppController{
 		$this->set(compact('games'));
 	}
 	public function new(){
+
 
 		if($this->request->getAttribute('identity')->level == 'user')
 			return $this->redirect(['controller' => 'Games', 'action' => 'index']);
@@ -71,7 +72,7 @@ class GamesController extends AppController{
 		$game = $game->first();
 
 		$user = $this->paginate(
-			$this->Games->Librairies->findByGame_id($game_id),
+			$this->Games->Libraries->findByGame_id($game_id),
 			[ 'limit' => 5, 'contain' => 'Users']
 		);
 		$this->set(compact('game', 'user'));

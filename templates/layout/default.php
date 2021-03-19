@@ -37,7 +37,7 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
 </head>
 <body>
     <nav class="top-nav">
-     <?= $this->Html->link('Acceuil', ['controller' => 'Users', 'action' => 'login']) ?>
+     <?= $this->Html->link('Accueil', ['controller' => 'Users', 'action' => 'login']) ?>
     
 
      <?php if($this->request->getAttribute('identity') == null) { ?>
@@ -45,7 +45,16 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
      <?= $this->Html->link('Créer un compte', ['controller' => 'Users', 'action' => 'new']) ?>
 
      <?php } else { ?>
+
+      <?php  
+    if($this->request->getAttribute('identity')->level != 'user'){?>
+     <?= $this->Html->link('Ajouter un jeu', ['controller' => 'games', 'action' => 'new']) ?>
+    <?php }?>
      <?= $this->Html->link('Mon compte', ['controller' => 'Users', 'action' => 'view', $this->request->getAttribute('identity')->id]) ?>
+
+     <?= $this->Html->link('Se deconnecter', ['controller' => 'Users', 'action' => 'logout']) ?>
+
+
 
       <?php } ?>
       
