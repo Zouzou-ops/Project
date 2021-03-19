@@ -12,7 +12,7 @@ class  UsersTable extends Table{
 
 		$this->addBehavior('Timestamp');
 
-		$this->hasMany('Librairies', ['foreignKey' => 'user_id']);
+		$this->hasMany('Libraries', ['foreignKey' => 'user_id']);
 		$this->hasMany('Comments', ['foreignKey' => 'game_id']);
 	}
 

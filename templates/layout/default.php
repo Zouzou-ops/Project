@@ -37,13 +37,18 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
 </head>
 <body>
     <nav class="top-nav">
-        <div class="top-nav-title">
-            <a href="<?= $this->Url->build('/') ?>"><span>Cake</span>PHP</a>
-        </div>
-        <div class="top-nav-links">
-            <a target="_blank" rel="noopener" href="https://book.cakephp.org/4/">Documentation</a>
-            <a target="_blank" rel="noopener" href="https://api.cakephp.org/">API</a>
-        </div>
+     <?= $this->Html->link('Acceuil', ['controller' => 'Users', 'action' => 'login']) ?>
+    
+
+     <?php if($this->request->getAttribute('identity') == null) { ?>
+     <?= $this->Html->link('Se connecter', ['controller' => 'Users', 'action' => 'login']) ?>
+     <?= $this->Html->link('Créer un compte', ['controller' => 'Users', 'action' => 'new']) ?>
+
+     <?php } else { ?>
+     <?= $this->Html->link('Mon compte', ['controller' => 'Users', 'action' => 'view', $this->request->getAttribute('identity')->id]) ?>
+
+      <?php } ?>
+      
     </nav>
     <main class="main">
         <div class="container">

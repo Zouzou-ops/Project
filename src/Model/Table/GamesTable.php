@@ -9,7 +9,7 @@ class GamesTable extends Table{
 	public function initialize(array $config) :void{
 		$this->addBehavior('Timestamp');
 
-		$this->hasMany('Librairies', ['foreignKey' => 'game_id']);
+		$this->hasMany('Libraries', ['foreignKey' => 'game_id']);
 		$this->hasMany('Comments', ['foreignKey' => 'game_id']);
 	}
 

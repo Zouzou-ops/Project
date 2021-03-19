@@ -1,4 +1,4 @@
-<?php //UsersController.php
+<?php 
 
 namespace App\Controller;
 
@@ -57,7 +57,7 @@ class UsersController extends AppController {
         if($id == null)
             return $this->redirect(['controller' => 'Games','action' => 'index']);
 
-        $info = $this->Users->findById($id)->contain(['Librairies']);
+        $info = $this->Users->findById($id)->contain(['Libraries']);
 
         if($info->isEmpty())
             return $this->redirect(['controller' => 'Games','action' => 'index']);
@@ -70,5 +70,45 @@ class UsersController extends AppController {
             [ 'limit' => 5, 'contain' => 'Games'  ]
         );
         $this->set(compact('info', 'games'));
+
     }
+
+    public function edit($id = null){
+        if ($id == null)
+            return $this->redirect(['controller' => 'Games', 'action' => 'index']);
+        $u = $this->Users->get($id);
+        if ($this->request->is(['post', 'put'])) { 
+            $u->login = $this->request->getData('login');
+
+            if(empty($this->request->getData('avatar')->getClientFilename()) ||
+                !in_array($this->request->getData('avatar')->getClientMediaType(), ['image/png', 'image/jpg', 'image/jpeg', 'image/gif'])
+            ){
+                //flash error
+               $this->Flash->error('L\'image doit être au format png, jpeg ou jpg');
+            }else{ //sinon
+                //on recup l'extension
+                $ext = pathinfo($this->request->getData('avatar')->getClientFilename(), PATHINFO_EXTENSION);
+                //on cree un nouveau nom
+                $newName = 'pic-'.rand(0, 999).'-'.time().'.'.$ext;
+                //on place le nouveau nom dans l'entité 
+                $u->avatar = $newName;               
+
+                //on tente la sauvegarde
+                if($this->Users->save($u)){
+                    //on deplace le fichier vers le dossier data avec le nouveau nom
+                    $this->request->getData('avatar')->moveTo(WWW_ROOT.'img/data/avatar/'.$newName);
+                    //on flash success
+                    $this->Flash->success('Ok');
+                }else{ //sinon 
+                    //error
+                    $this->Flash->error('Planté, try again');
+                }//fin si sauvegarde
+            }//fin si format
+              return $this->redirect(['controller' => 'Users', 'action' => 'view', $u->id]);
+            
+        
+        }//fin si mode
+        $this->set(compact('u'));   
+        //redirection vers la page de l'album
+}
 }

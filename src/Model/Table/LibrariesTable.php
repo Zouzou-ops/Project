@@ -5,7 +5,7 @@ namespace App\Model\Table;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 	
-class LibrairiesTable extends Table{
+class LibrariesTable extends Table{
 
 	public function initialize(array $config): void{
 		parent::initialize($config);
